@@ -6,8 +6,17 @@ IMM=01
 IDD=01
 IHH=00
 
+# Final date
+FYYYY=1983
+FMM=03
+FDD=01
+FHH=00
+
 # Number of ensemble members
 n_ens=20
+
+# Nature run resolution (choose t30 or t39)
+nat_res=t30
 
 # RTPP factor
 rtpp=0.0d0
