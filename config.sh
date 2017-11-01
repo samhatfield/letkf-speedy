@@ -13,7 +13,10 @@ FDD=01
 FHH=00
 
 # Number of ensemble members
-n_ens=20
+n_ens=24
+
+# Number of MPI processes to use
+n_procs=4
 
 # Nature run resolution (choose t30 or t39)
 nat_res=t30
