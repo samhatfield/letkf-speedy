@@ -1,0 +1,23 @@
+# Default compiler
+FC = gfortran
+
+# Compilation arguments
+COMPARGS = -fconvert=swap -O3
+
+# Define all files that observation operator depends on
+depend = mod_atparam_hr.o mod_atparam_lr.o mod_spectral_hr.o mod_spectral_lr.o mod_fft_hr.o mod_fft_lr.o\
+		 spe_subfft_fftpack_hr.o spe_subfft_fftpack_lr.o spe_spectral_hr.o spe_spectral_lr.o
+
+# Main compilation rule
+interpolate: interpolate.o $(depend)
+	$(FC) $(COMPARGS) -o $@ $^
+
+interpolate.o: $(depend)
+
+# Build rules
+%.o: %.f90
+	$(FC) $(COMPARGS) -c $< -o $@
+
+.PHONY: clean
+clean:
+	rm -f *.o *.mod *.o *.mod
