@@ -9,13 +9,13 @@ module mod_tsteps
     public isst0, delt, delt2, rob, wil, alph
 
     ! Integration length in months
-    integer :: nmonts = 3
+    integer :: nmonts = NMONTS
 
     ! No. of days in the last month of int. (max=30)
     integer :: ndaysl = 0
 
     ! No. of time steps in one day
-    integer, parameter :: nsteps = 36
+    integer, parameter :: nsteps = NSTEPS
 
     ! Period (no. of steps) for diagnostic print-out
     integer, parameter :: nstdia = 36*5
@@ -30,12 +30,12 @@ module mod_tsteps
     integer, parameter :: idout  = 0
 
     ! Period (no. of months) for restart file update
-    integer, parameter :: nmonrs = 3
+    integer, parameter :: nmonrs = NMONRS
 
     ! 6-hourly output flags
-    logical, parameter :: ihout = .false.
-    logical, parameter :: ipout = .false.
-    logical, parameter :: sixhrrun = .false.
+    logical, parameter :: ihout = IHOUT
+    logical, parameter :: ipout = IPOUT
+    logical, parameter :: sixhrrun = SIXHRRUN
 
     ! Seasonal cycle flag (0=no, 1=yes)
     integer, parameter :: iseasc = 1

@@ -101,13 +101,13 @@ FILES= \
 .SUFFIXES: .f .f90 .o
 
 .f90.o:
-	$(COMPILE) $(COMCONV) $(COMOTT1) -c $< -I../rpe/modules
+	$(COMPILE) $(COMCONV) $(COMOTT1) -c $< -Imodules
 
 .f.o:
 	$(COMPILE) $(COMCONV) $(COMOTT1) -c $<
 
 imp.exe: $(FILES)  at_gcm.o
-	$(COMPILE) $(COMCONV) $(COMOTT1) $(FILES) at_gcm.o -o imp.exe $(COMLIB1) -lrpe -L../rpe/lib
+	$(COMPILE) $(COMCONV) $(COMOTT1) $(FILES) at_gcm.o -o imp.exe $(COMLIB1) -lrpe -Llib
 
 .PHONY: clean
 clean:

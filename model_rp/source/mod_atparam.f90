@@ -7,7 +7,7 @@ module mod_atparam
     public kx, kx2, kxm, kxp, ntr
 
     integer, parameter :: isc = 1
-    integer, parameter :: ntrun = 30, mtrun = 30, ix = 96, iy = 24
+    integer, parameter :: ntrun = NTRUN, mtrun = NTRUN, ix = NLON, iy = NLAT/2
     integer, parameter :: nx = ntrun+2, mx = mtrun+1, mxnx = mx*nx, mx2 = 2*mx
     integer, parameter :: il = 2*iy, ntrun1 = ntrun+1
     integer, parameter :: nxp = nx+1 , mxp = isc*mtrun+1, lmax = mxp+nx-2

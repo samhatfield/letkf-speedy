@@ -10,6 +10,7 @@ subroutine stloop(istep)
     use mod_tsteps
     use mod_date, only: ihour, newdate
     use mod_dynvar
+    use rp_emulator
 
     implicit none
 
@@ -50,8 +51,10 @@ subroutine stloop(istep)
         end if
 
         if (ihout) then
+            RPE_ACTIVE = .false.
             if (ipout) call iogrid (2) !output for every 6 hours
             call iogrid (4) !gridded data output for every 6 hours
+            RPE_ACTIVE = .true.
         end if
 
         if (sixhrrun) then
