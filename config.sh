@@ -13,7 +13,7 @@ FDD=01
 FHH=00
 
 # Number of ensemble members
-n_ens=24
+n_ens=20
 
 # Number of MPI processes to use
 n_procs=4
