@@ -18,6 +18,16 @@ n_ens=20
 # Nature run resolution (choose t30 or t39)
 nat_res=t30
 
+# Choose observation network (choose "real" or "uniform")
+obs_network=real
+
+# Observation errors
+u_err=1.00E+00
+v_err=1.00E+00
+t_err=1.00E+00
+q_err=1.00E-03
+ps_err=1.00E+02
+
 # RTPP factor
 rtpp=0.0d0
 
