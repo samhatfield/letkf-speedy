@@ -1,0 +1,33 @@
+# Default compiler
+FC = mpif90
+
+# Location of SPEEDY common files
+common = ../common
+
+# Compilation arguments
+COMPARGS = -fconvert=swap -O3
+
+# BLAS routines
+BLAS = $(common)/netlibrs.f $(common)/netlibblas.f
+
+# Define all files that observation operator depends on
+common_depend = $(common)/common_speedy.o $(common)/common_obs_speedy.o $(common)/common.o $(common)/SFMT.o
+
+# Main compilation rule
+obsope: obsope.o $(common_depend)
+	$(FC) $(COMPARGS) -o $@ $^
+
+obsope.o: $(common_depend)
+$(common)/common.o: $(common)/SFMT.o
+$(common)/common_speedy.o: $(common)/common.o
+
+# Build rules
+$(common)/%.o: $(common)/%.f90
+	$(FC) $(COMPARGS) -c $< -o $@
+
+%.o: %.f90
+	$(FC) $(COMPARGS) -c $< -o $@
+
+.PHONY: clean
+clean:
+	rm -f *.o *.mod $(common)/*.o $(common)/*.mod
