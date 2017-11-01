@@ -1,14 +1,11 @@
 # Default compiler
-FC = mpif90
+FC = gfortran
 
 # Location of SPEEDY common files
 common = ../common
 
 # Compilation arguments
 COMPARGS = -fconvert=swap -O3
-
-# BLAS routines
-BLAS = $(common)/netlibrs.f $(common)/netlibblas.f
 
 # Define all files that observation operator depends on
 common_depend = $(common)/common_speedy.o $(common)/common_obs_speedy.o $(common)/common.o $(common)/SFMT.o
