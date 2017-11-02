@@ -25,7 +25,7 @@ MODULE common_letkf
 !=======================================================================
 !  LEKF Model Independent Parameters
 !=======================================================================
-  INTEGER,PARAMETER :: nbv = 20    ! ensemble size
+  INTEGER,PARAMETER :: n_ens = 20    ! ensemble size
   REAL(r_size),PARAMETER :: relax_alpha = 0.0d0  ! relaxation parameter     !GYL
 
 CONTAINS
@@ -117,14 +117,6 @@ SUBROUTINE letkf_core(ne,nobs,nobsl,hdxb,rdiag,rloc,dep,parm_infl,trans,transm,p
 !-----------------------------------------------------------------------
   CALL dgemm('t','n',ne,ne,nobsl,1.0d0,hdxb_rinv,nobsl,hdxb(1:nobsl,:),&
     & nobsl,0.0d0,work1,ne)
-!  DO j=1,ne
-!    DO i=1,ne
-!      work1(i,j) = hdxb_rinv(1,i) * hdxb(1,j)
-!      DO k=2,nobsl
-!        work1(i,j) = work1(i,j) + hdxb_rinv(k,i) * hdxb(k,j)
-!      END DO
-!    END DO
-!  END DO
 !-----------------------------------------------------------------------
 !  hdxb^T Rinv hdxb + (m-1) I / rho (covariance inflation)
 !-----------------------------------------------------------------------
@@ -151,27 +143,11 @@ SUBROUTINE letkf_core(ne,nobs,nobsl,hdxb,rdiag,rloc,dep,parm_infl,trans,transm,p
   END DO
   CALL dgemm('n','t',ne,ne,ne,1.0d0,work1,ne,eivec,&
     & ne,0.0d0,pa,ne)
-!  DO j=1,ne
-!    DO i=1,ne
-!      pa(i,j) = work1(i,1) * eivec(j,1)
-!      DO k=2,ne
-!        pa(i,j) = pa(i,j) + work1(i,k) * eivec(j,k)
-!      END DO
-!    END DO
-!  END DO
 !-----------------------------------------------------------------------
 !  Pa hdxb_rinv^T
 !-----------------------------------------------------------------------
   CALL dgemm('n','t',ne,nobsl,ne,1.0d0,pa,ne,hdxb_rinv,&
     & nobsl,0.0d0,work2,ne)
-!  DO j=1,nobsl
-!    DO i=1,ne
-!      work2(i,j) = pa(i,1) * hdxb_rinv(j,1)
-!      DO k=2,ne
-!        work2(i,j) = work2(i,j) + pa(i,k) * hdxb_rinv(j,k)
-!      END DO
-!    END DO
-!  END DO
 !-----------------------------------------------------------------------
 !  Pa hdxb_rinv^T dep
 !-----------------------------------------------------------------------
@@ -192,14 +168,6 @@ SUBROUTINE letkf_core(ne,nobs,nobsl,hdxb,rdiag,rloc,dep,parm_infl,trans,transm,p
   END DO
   CALL dgemm('n','t',ne,ne,ne,1.0d0,work1,ne,eivec,&
     & ne,0.0d0,trans,ne)
-!  DO j=1,ne
-!    DO i=1,ne
-!      trans(i,j) = work1(i,1) * eivec(j,1)
-!      DO k=2,ne
-!        trans(i,j) = trans(i,j) + work1(i,k) * eivec(j,k)
-!      END DO
-!    END DO
-!  END DO
 !-----------------------------------------------------------------------
 !  T + Pa hdxb_rinv^T dep
 !-----------------------------------------------------------------------
@@ -208,7 +176,7 @@ SUBROUTINE letkf_core(ne,nobs,nobsl,hdxb,rdiag,rloc,dep,parm_infl,trans,transm,p
   ELSE                                     !GYL
     IF (relax_alpha /= 0.0d0) THEN            !GYL
       trans = (1.0d0 - relax_alpha) * trans   !GYL
-      DO i=1,nbv                              !GYL
+      DO i=1,ne                               !GYL
         trans(i,i) = relax_alpha + trans(i,i) !GYL
       END DO                                  !GYL
     END IF                                    !GYL
@@ -240,7 +208,6 @@ SUBROUTINE letkf_core(ne,nobs,nobsl,hdxb,rdiag,rloc,dep,parm_infl,trans,transm,p
   parm(2) = parm(2) / REAL(ne-1,r_size)
   parm(3) = SUM(rloc(1:nobsl))
   parm(4) = (parm(1)-parm(3))/parm(2) - parm_infl
-!  sigma_o = 1.0d0/REAL(nobsl,r_size)/MAXVAL(rloc(1:nobsl))
   sigma_o = 2.0d0/parm(3)*((parm_infl*parm(2)+parm(3))/parm(2))**2
   gain = sigma_b**2 / (sigma_o + sigma_b**2)
   parm_infl = parm_infl + gain * parm(4)

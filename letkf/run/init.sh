@@ -26,7 +26,7 @@ mkdir -p $OUTPUT/log
 mkdir -p $OUTPUT/infl_mul
 
 echo "Inserting experiment configuration parameters"
-sed -i -r -e "s/nbv = [0-9]+/nbv = $n_ens/" $SPEEDY/common/common_letkf.f90
+sed -i -r -e "s/n_ens = [0-9]+/n_ens = $n_ens/" $SPEEDY/common/common_letkf.f90
 sed -i -r -e "s/relax_alpha = [0-9]+.[0-9]+d0/relax_alpha = $rtpp/" $SPEEDY/common/common_letkf.f90
 sed -i -r -e "s/sigma_obs=[0-9]+.[0-9]+d[0-9]+/sigma_obs=$hor_loc/" $LETKF/letkf_obs.f90
 sed -i -r -e "s/sigma_obsv=[0-9]+.[0-9]+d[0-9]+/sigma_obsv=$ver_loc/" $LETKF/letkf_obs.f90

@@ -115,8 +115,8 @@ SUBROUTINE set_letkf_obs
   ALLOCATE( tmperr(nobs) )
   ALLOCATE( tmpk(nobs) )
   ALLOCATE( tmpdep(nobs) )
-  ALLOCATE( tmphdxf(nobs,nbv) )
-  ALLOCATE( tmpqc0(nobs,nbv) )
+  ALLOCATE( tmphdxf(nobs,n_ens) )
+  ALLOCATE( tmpqc0(nobs,n_ens) )
   ALLOCATE( tmpqc(nobs) )
   tmpqc0 = 0
   tmphdxf = 0.0d0
@@ -129,7 +129,7 @@ SUBROUTINE set_letkf_obs
     l=0
     DO
       im = myrank+1 + nprocs * l
-      IF(im > nbv) EXIT
+      IF(im > n_ens) EXIT
       WRITE(obsfile(4:8),'(I2.2,I3.3)') islot,im
       WRITE(6,'(A,I3.3,2A)') 'MYRANK ',myrank,' is reading a file ',obsfile
       CALL read_obs2(obsfile,nobslots(islot),&
@@ -143,15 +143,15 @@ SUBROUTINE set_letkf_obs
   END DO timeslots
 
   CALL MPI_BARRIER(MPI_COMM_WORLD,ierr)
-  ALLOCATE(wk2d(nobs,nbv))
+  ALLOCATE(wk2d(nobs,n_ens))
   wk2d = tmphdxf
   CALL MPI_BARRIER(MPI_COMM_WORLD,ierr)
-  CALL MPI_ALLREDUCE(wk2d,tmphdxf,nobs*nbv,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,ierr)
+  CALL MPI_ALLREDUCE(wk2d,tmphdxf,nobs*n_ens,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,ierr)
   DEALLOCATE(wk2d)
-  ALLOCATE(iwk2d(nobs,nbv))
+  ALLOCATE(iwk2d(nobs,n_ens))
   iwk2d = tmpqc0
   CALL MPI_BARRIER(MPI_COMM_WORLD,ierr)
-  CALL MPI_ALLREDUCE(iwk2d,tmpqc0,nobs*nbv,MPI_INTEGER,MPI_MAX,MPI_COMM_WORLD,ierr)
+  CALL MPI_ALLREDUCE(iwk2d,tmpqc0,nobs*n_ens,MPI_INTEGER,MPI_MAX,MPI_COMM_WORLD,ierr)
   DEALLOCATE(iwk2d)
 
 !$OMP PARALLEL DO SCHEDULE(DYNAMIC) PRIVATE(n,i)
@@ -159,11 +159,11 @@ SUBROUTINE set_letkf_obs
     tmpqc(n) = MINVAL(tmpqc0(n,:))
     IF(tmpqc(n) /= 1) CYCLE
     tmpdep(n) = tmphdxf(n,1)
-    DO i=2,nbv
+    DO i=2,n_ens
       tmpdep(n) = tmpdep(n) + tmphdxf(n,i)
     END DO
-    tmpdep(n) = tmpdep(n) / REAL(nbv,r_size)
-    DO i=1,nbv
+    tmpdep(n) = tmpdep(n) / REAL(n_ens,r_size)
+    DO i=1,n_ens
       tmphdxf(n,i) = tmphdxf(n,i) - tmpdep(n) ! Hdx
     END DO
     tmpdep(n) = tmpdat(n) - tmpdep(n) ! y-Hx
@@ -192,19 +192,6 @@ SUBROUTINE set_letkf_obs
   nn = 0
   DO n=1,nobs
     IF(tmpqc(n) /= 1) CYCLE
-!    IF(tmplat(n) < MINVAL(lat1) .OR. MAXVAL(lat1) < tmplat(n)) THEN
-!      dlat = MIN( ABS(MINVAL(lat1)-tmplat(n)),ABS(MAXVAL(lat1)-tmplat(n)) )
-!      IF(dlat > dlat_zero) CYCLE
-!    END IF
-!    IF(tmplon(n) < MINVAL(lon1) .OR. MAXVAL(lon1) < tmplon(n)) THEN
-!      dlon1 = ABS(MINVAL(lon1) - tmplon(n))
-!      dlon1 = MIN(dlon1,360.0d0-dlon1)
-!      dlon2 = ABS(MAXVAL(lon1) - tmplon(n))
-!      dlon2 = MIN(dlon2,360.0d0-dlon2)
-!      dlon =  MIN(dlon1,dlon2) &
-!         & * pi*re*COS(tmplat(n)*pi/180.d0)/180.0d0
-!      IF(dlon > dist_zero) CYCLE
-!    END IF
     nn = nn+1
     tmpelm(nn) = tmpelm(n)
     tmplon(nn) = tmplon(n)
@@ -230,7 +217,7 @@ SUBROUTINE set_letkf_obs
   ALLOCATE( tmp2err(nobs) )
 !  ALLOCATE( tmp2k(nobs) )
   ALLOCATE( tmp2dep(nobs) )
-  ALLOCATE( tmp2hdxf(nobs,nbv) )
+  ALLOCATE( tmp2hdxf(nobs,n_ens) )
   ALLOCATE( obselm(nobs) )
   ALLOCATE( obslon(nobs) )
   ALLOCATE( obslat(nobs) )
@@ -239,7 +226,7 @@ SUBROUTINE set_letkf_obs
   ALLOCATE( obserr(nobs) )
 !  ALLOCATE( obsk(nobs) )
   ALLOCATE( obsdep(nobs) )
-  ALLOCATE( obshdxf(nobs,nbv) )
+  ALLOCATE( obshdxf(nobs,n_ens) )
   nobsgrd = 0
   nj = 0
 !$OMP PARALLEL PRIVATE(i,j,n,nn)
