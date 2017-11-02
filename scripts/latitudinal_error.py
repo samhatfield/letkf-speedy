@@ -9,12 +9,15 @@ from os import chdir
 from iris import load_cube, Constraint, FUTURE
 from iris.analysis import MEAN
 from iris.time import PartialDateTime
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from netcdftime import datetime
 from sys import argv
 from nc_time_axis import CalendarDateTime
+from seaborn import plt
+import seaborn as sns
+
+sns.set_style('whitegrid', {'font.sans-serif': "Helvetica"})
+sns.set_palette(sns.color_palette('Set1'))
 
 def plot(dirname, field, vert_range, label):
     with catch_warnings():
@@ -52,8 +55,9 @@ def plot(dirname, field, vert_range, label):
             sprd = sprd.extract(Constraint(time=lambda t: t > PartialDateTime(month=3,day=1)))\
                     .collapsed('time', MEAN)
 
-        rmse_h, = qplt.plot(rmse, label=f'{label} error', linestyle='-')
-        sprd_h, = qplt.plot(sprd, label=f'{label} spread', linestyle='--', color=rmse_h.get_color())
+        latitude_coord = rmse.coord('latitude')
+        rmse_h, = plt.plot(latitude_coord.points, rmse.data, label=f'{label} error', linestyle='-')
+        sprd_h, = plt.plot(latitude_coord.points, sprd.data, label=f'{label} spread', linestyle='--', color=rmse_h.get_color())
 
         return [rmse_h, sprd_h]
 
@@ -72,8 +76,6 @@ fields = {
 vert_secs = [(1.0, 0.5), (0.5, 0.2), (0.2, 0.0)]
 
 field = ' '.join(fields[argv[2]])
-
-plt.style.use('ggplot')
 
 plt.figure(figsize=(5,5), facecolor='white')
 

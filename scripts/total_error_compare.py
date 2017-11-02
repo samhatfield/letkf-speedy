@@ -9,12 +9,15 @@ from os import chdir
 from iris import load_cube, Constraint, FUTURE
 from iris.analysis import SUM, MEAN
 from iris.time import PartialDateTime
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from netcdftime import datetime
 from sys import argv
 from nc_time_axis import CalendarDateTime
+from seaborn import plt
+import seaborn as sns
+
+sns.set_style('whitegrid', {'font.sans-serif': "Helvetica"})
+sns.set_palette(sns.color_palette('Set1'))
 
 def plot(dirname, label_in):
     with catch_warnings():
@@ -31,6 +34,10 @@ def plot(dirname, label_in):
         time = min(analy_ps.coord('time').points[-1], nature_ps.coord('time').points[-1])
         analy_ps = analy_ps.extract(Constraint(time=lambda t: t < time))
         nature_ps = nature_ps.extract(Constraint(time=lambda t: t < time))
+
+        # Generate x date axis
+        with FUTURE.context(cell_datetime_objects=True):
+            time_axis = [x.point for x in nature_ps.coord('time').cells()]
 
         rmse = (((analy_ps - nature_ps)/obs_errors[0])**2).collapsed(['latitude', 'longitude'], SUM)
     
@@ -54,8 +61,6 @@ def plot(dirname, label_in):
         # Square root to get RMSE
         rmse = rmse ** 0.5
     
-        print(rmse.data)
-    
         label = label_in + ' RMSE'
 
         # Try to compute time mean after March 1st 00:00 (if data doesn't go up to March 1st yet,
@@ -68,7 +73,7 @@ def plot(dirname, label_in):
         except AttributeError:
             pass
     
-        rmse_h, = qplt.plot(rmse, label=label)
+        rmse_h, = plt.plot(time_axis, rmse.data, label=label)
 
         for field, obs_error in zip(fields, obs_errors):
             print(f'Plotting {field}')
@@ -90,8 +95,6 @@ def plot(dirname, label_in):
         # Divide by the total number of fields (4 3D fields x 8 levels + 1 2D field) and gridpoints (96*48)
         sprd = sprd / (33.0*96.0*48.0)
 
-        print(sprd.data)
-
         label = label_in + ' spread'
 
         # Try to compute time mean after March 1st 00:00 (if data doesn't go up to March 1st yet,
@@ -104,7 +107,7 @@ def plot(dirname, label_in):
         except AttributeError:
             pass
 
-        sprd_h, = qplt.plot(sprd, linestyle='--', label=label, color=rmse_h.get_color())
+        sprd_h, = plt.plot(time_axis, sprd.data, linestyle='--', label=label, color=rmse_h.get_color())
 
         return [rmse_h, sprd_h]
 
@@ -125,7 +128,6 @@ obs_errors = [100, 1.0, 1.0, 1.0, 0.001]
 levels = [0.95, 0.835, 0.685, 0.51, 0.34, 0.2, 0.095, 0.025]
 
 plt.rc('lines', linewidth=1.0)
-plt.style.use('ggplot')
 
 plt.figure(figsize=(9,3), facecolor='white')
 
@@ -139,7 +141,6 @@ for d, l in zip(dirs, labels):
 
     handles += plot(d, l)
 
-plt.xlim([CalendarDateTime(datetime(1982,1,1,0), '365_day'), CalendarDateTime(datetime(1984,1,1,0), '365_day')])
 plt.ylim([0, 3.5])
 plt.xlabel('Time')
 plt.ylabel(f'Total analysis RMSE')

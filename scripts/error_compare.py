@@ -9,12 +9,15 @@ from os import chdir
 from iris import load_cube, Constraint, FUTURE
 from iris.analysis import MEAN
 from iris.time import PartialDateTime
-import iris.quickplot as qplt
-import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from netcdftime import datetime
 from sys import argv
 from nc_time_axis import CalendarDateTime
+from seaborn import plt
+import seaborn as sns
+
+sns.set_style('whitegrid', {'font.sans-serif': "Helvetica"})
+sns.set_palette(sns.color_palette('Set1'))
 
 def plot(dirname, field, label_in):
     with catch_warnings():
@@ -32,6 +35,10 @@ def plot(dirname, field, label_in):
         analy_ps = analy_ps.extract(Constraint(time=lambda t: t < time))
         nature_ps = nature_ps.extract(Constraint(time=lambda t: t < time))
 
+        # Generate x date axis
+        with FUTURE.context(cell_datetime_objects=True):
+            time_axis = [x.point for x in nature_ps.coord('time').cells()]
+
         coords = ['latitude', 'longitude', 'atmosphere_sigma_coordinate']
         rmse = ((analy_ps - nature_ps)**2).collapsed(coords, MEAN)**0.5
     
@@ -47,7 +54,7 @@ def plot(dirname, field, label_in):
         except AttributeError:
             pass
     
-        rmse_h, = qplt.plot(rmse, label=label)
+        rmse_h, = plt.plot(time_axis, rmse.data, label=label)
 
         analy_cb = load_cube(f'{dirname}/sprd.nc', field)
         analy_cb = analy_cb.extract(Constraint(time=lambda t: t < time))
@@ -66,7 +73,7 @@ def plot(dirname, field, label_in):
         except AttributeError:
             pass
 
-        sprd_h, = qplt.plot(sprd, linestyle='--', label=label, color=rmse_h.get_color())
+        sprd_h, = plt.plot(time_axis, sprd.data, linestyle='--', label=label, color=rmse_h.get_color())
 
         return [rmse_h, sprd_h]
 
@@ -97,7 +104,6 @@ for d, l in zip(dirs, labels):
 
     handles += plot(d, fields[argv[2]][0], l)
 
-plt.xlim([CalendarDateTime(datetime(1982,1,1,0), '365_day'), CalendarDateTime(datetime(1984,1,1,0), '365_day')])
 plt.ylim([0, 3.5])
 plt.xlabel('Time')
 plt.ylabel(f'{fields[argv[2]][1]}')
