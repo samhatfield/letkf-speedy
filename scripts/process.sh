@@ -29,6 +29,9 @@ mkdir -p $SPEEDY/experiments/$exp_name/reduced
 # Copy experiment config file
 cp $SPEEDY/config.sh $SPEEDY/experiments/$exp_name
 
+# Add git commit revision to config file
+printf "\n# Git commit revision\n`git rev-parse HEAD`" >> $SPEEDY/experiments/$exp_name/config.sh
+
 # If nature run hasn't been processed yet...
 if [ ! -f $SPEEDY/experiments/$exp_name/nature.nc ]; then
     grd2nc nature nature
