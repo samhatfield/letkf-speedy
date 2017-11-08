@@ -80,6 +80,7 @@ for d, l in zip(dirs, labels):
 plt.xlabel(f'{fields[argv[2]][1]}')
 plt.ylabel('Sigma coordinate')
 plt.ylim([1.0, 0.0])
+plt.xlim([0.0, max(1.0, plt.gca().get_xlim()[1])])
 plt.gca().set_xlim(left=0)
 plt.title('')
 
