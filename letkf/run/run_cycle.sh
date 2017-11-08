@@ -101,6 +101,7 @@ do
     # Choose additive covariance inflation perturbations
     if [ $addi_dir -ne 0 ]
     then
+        echo "Sampling additive noise archive"
         years=($(shuf -i 1982-2005))
         for MEM in `seq 1 $n_ens`
         do
