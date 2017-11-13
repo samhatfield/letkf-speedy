@@ -48,6 +48,14 @@ then
     cp -r $SPEEDY/model_rp/rpe/lib .
 fi
 
+# Perturb parameters
+if [[ $pert -eq "1" ]]
+then
+    echo "Perturbing parameters"
+    mv mod_cnvcon.pert.f90 mod_cnvcon.f90
+    mv mod_dyncon0.pert.f90 mod_dyncon0.f90
+fi
+
 # Set resolution
 sed -i "s/NTRUN/30/g" mod_atparam.f90
 sed -i "s/NLON/96/g" mod_atparam.f90

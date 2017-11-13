@@ -21,6 +21,9 @@ n_procs=4
 # Nature run resolution (choose t30 or t39)
 nat_res=t30
 
+# Use perturbed parameters for model or not
+pert=1
+
 # Choose observation network (choose "real" or "uniform")
 obs_network=real
 
