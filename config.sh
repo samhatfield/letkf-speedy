@@ -22,7 +22,7 @@ n_procs=4
 nat_res=t30
 
 # Use perturbed parameters for model or not
-pert=1
+pert=0
 
 # Choose observation network (choose "real" or "uniform")
 obs_network=real
