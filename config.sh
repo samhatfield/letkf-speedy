@@ -24,6 +24,9 @@ nat_res=t30
 # Use perturbed parameters for model or not
 pert=0
 
+# Save all members or not (if it's 0 then only the mean and spread are saved)
+save_ens=1
+
 # Choose observation network (choose "real" or "uniform")
 obs_network=real
 

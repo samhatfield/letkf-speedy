@@ -5,8 +5,6 @@
 #=======================================================================
 set -e
 
-NOSAVEENS=1 #0:save all members, 1:save only mean/sprd 
-
 # Directory settings
 cd ../..
 SPEEDY=`pwd`
@@ -165,7 +163,7 @@ do
     done
     
     # Clean up
-    if test $NOSAVEENS -eq 1
+    if test $save_ens -eq 0
     then
         for MEM in $(seq -f "%03g" 1 $n_ens)
         do
