@@ -25,7 +25,7 @@ nat_res=t30
 pert=0
 
 # Save all members or not (if it's 0 then only the mean and spread are saved)
-save_ens=1
+save_ens=0
 
 # Choose observation network (choose "real" or "uniform")
 obs_network=real
