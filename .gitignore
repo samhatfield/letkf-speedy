@@ -1,0 +1,10 @@
+*.swp
+input
+output
+figs
+rpe
+tmp
+animations
+.rsync-filter
+experiments
+data
