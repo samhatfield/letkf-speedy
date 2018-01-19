@@ -44,6 +44,15 @@ then
     cp $SPEEDY/model_rp/source/*.s .
     cp -r $SPEEDY/model_rp/rpe/modules .
     cp -r $SPEEDY/model_rp/rpe/lib .
+elif [[ "$1" = "mixed" ]]
+then
+    # Mixed precision SPEEDY
+    cp $SPEEDY/model_mp/source/makefile .
+    cp $SPEEDY/model_mp/source/*.h .
+    cp $SPEEDY/model_mp/source/*.f90 .
+    cp $SPEEDY/model_mp/source/*.s .
+    cp -r $SPEEDY/model_mp/rpe/modules .
+    cp -r $SPEEDY/model_mp/rpe/lib .
 fi
 
 # Perturb parameters

@@ -23,8 +23,7 @@ exp_name=$1
 prec=$2
 
 # Create experiment directory
-mkdir -p $SPEEDY/experiments/$exp_name/double
-mkdir -p $SPEEDY/experiments/$exp_name/reduced
+mkdir -p $SPEEDY/experiments/$exp_name/$prec
 
 # Copy experiment config file
 cp $SPEEDY/config.sh $SPEEDY/experiments/$exp_name
