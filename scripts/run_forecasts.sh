@@ -99,10 +99,10 @@ cp    $SC/ssta.grd  fort.30
 T="$(date +%s)"
 
 # Cycle run
-YYYY=$IYYYY
-MM=$IMM
-DD=$IDD
-HH=$IHH
+YYYY=1982
+MM=03
+DD=01
+HH=00
 while test $YYYY$MM$DD$HH -le $FYYYY$FMM$FDD$FHH
 do
     echo "Begin forecast from $YYYY/$MM/$DD/$HH"
@@ -116,25 +116,19 @@ do
     FD=$DD
     FH=$HH
 
-    # Create forecast output directory
-    mkdir -p $OUTPUT/$YYYY$MM$DD$HH
-
     # Move to this directory and copy executable
     ln -fs $ASSIM_OUTPUT/$YYYY$MM$DD$HH.grd fort.90
 
     # Loop over forecast
     for i in $(seq 1 $LEN)
     do
-        echo "Begin forecast of $FY/$FM/$FD/$FH"
-
         FORT2=2
         echo $FORT2 > fort.2
         echo $FY >> fort.2
         echo $FM >> fort.2
         echo $FD >> fort.2
         echo $FH >> fort.2
-        ./imp.exe > out.lis
-        echo "Finished forecast of $FY/$FM/$FD/$FH"
+        ./imp.exe &> out.lis
 
         FY2=`timeinc6hr $FY $FM $FD $FH | cut -c1-4`
         FM2=`timeinc6hr $FY $FM $FD $FH | cut -c5-6`
@@ -150,10 +144,10 @@ do
 
     # Convert to NetCDF
     cp $SPEEDY/common/t30.ctl .
-    datestring=${IHH}Z$DD${MONTHS[`expr $MM - 1`]}$YYYY
-    sed -i "s/00Z01JAN1981/$datestring/g" t30.ctl
+    datestring=${HH}Z$DD${MONTHS[`expr $MM - 1`]}$YYYY
+    sed -i "s/00Z01JAN1982/$datestring/g" t30.ctl
     ctl2nc t30.ctl
-    mv t30.nc $OUTPUT/$YYYY$MM$DD$HH
+    mv t30.nc $OUTPUT/$YYYY$MM$DD$HH.nc
 
     ls *.grd | grep -v 'fluxes.grd' | xargs rm
     rm *.ctl
