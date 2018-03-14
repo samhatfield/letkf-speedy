@@ -51,7 +51,7 @@ def plot_fields(dirname, color):
         # Spread
         analys = extract_spread(fields[0][0], dirname, time)
         spread = analys.collapsed(['latitude', 'longitude', 'time'], MEAN)
-        plt.scatter(error.data/fields[0][3], spread.data/fields[0][3], marker=fields[0][2], color=color, s=20*1.5**(len(levels)-1), alpha=0.5)
+        plt.scatter(error.data/fields[0][3], spread.data/fields[0][3], marker=fields[0][2], color=color, s=60*1.5**(len(levels)-1), alpha=0.5)
     
         # Plot other fields
         for field in fields[1:]:
@@ -68,7 +68,7 @@ def plot_fields(dirname, color):
                 analys = analys.extract(Constraint(atmosphere_sigma_coordinate=lev))
                 spread = analys.collapsed(['latitude', 'longitude', 'time'], MEAN)
                 
-                plt.scatter(error.data/field[3], spread.data/field[3], marker=field[2], color=color, s=20*1.5**num, alpha=0.5)
+                plt.scatter(error.data/field[3], spread.data/field[3], marker=field[2], color=color, s=60*1.5**num, alpha=0.5)
 
 FUTURE.netcdf_promote = True
 
@@ -79,13 +79,13 @@ chdir(f'../experiments/{argv[1]}')
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 # Define levels and variables
-levels = [0.025, 0.095, 0.2, 0.34, 0.51, 0.685, 0.835, 0.95]
+levels = [0.025, 0.34, 0.51, 0.835, 0.95]
 fields = [
-        ('Surface Pressure [Pa]', 'ps', '*', 100.0),
-        ('U-wind [m/s]', 'u', '^', 1.0),
-        ('V-wind [m/s]', 'v', '>', 1.0),
-        ('Temperature [K]', 'T', 'o', 1.0),
-        ('Specific Humidity [kg/kg]', 'q', 'D', 0.001)
+        ('Surface Pressure [Pa]', 'Surface pressure', '*', 100.0),
+        ('U-wind [m/s]', 'Zonal wind', '^', 1.0),
+        ('V-wind [m/s]', 'Meriodional wind', 'v', 1.0),
+        ('Temperature [K]', 'Temperature', 'o', 1.0),
+        ('Specific Humidity [kg/kg]', 'Specific humidity', 'D', 0.001)
 ]
 
 fig = plt.figure(figsize=(5,5), facecolor='white')
@@ -119,11 +119,11 @@ for field in fields:
 # Legend for color
 plot_lines = [plt.plot([-1,-1.5], [-1,-1.5], color=colors[0])[0]]
 plot_lines.append(plt.plot([-1,-1.5], [-1,-1.5], color=colors[1])[0])
-col_leg = plt.legend(plot_lines, labels, loc=6)
+col_leg = plt.legend(plot_lines, labels, loc=6, fontsize=12)
 
 # Add both legends
 plt.gca().add_artist(col_leg)
-plt.legend(loc=2)
+plt.legend(loc=2, fontsize=12)
 
 plt.savefig(f'scatter_all_fields.pdf', bbox_inches='tight')
 plt.show()
