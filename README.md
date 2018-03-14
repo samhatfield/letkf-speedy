@@ -1,5 +1,7 @@
 # letkf-speedy
 
+[![DOI](https://zenodo.org/badge/47407916.svg)](https://zenodo.org/badge/latestdoi/47407916)
+
 ![SPEEDY](speedy.png)
 
 This repository contains an implementation of the [local ensemble transform Kalman filter](http://www.sciencedirect.com/science/article/pii/S0167278906004647) (LETKF) for performing data assimilation with the SPEEDY intermediate complexity atmospheric general circulation model. It is based on Takemasa Miyoshi's [LETKF repository](https://github.com/takemasa-miyoshi/letkf).
