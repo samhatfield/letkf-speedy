@@ -1,6 +1,6 @@
 # letkf-speedy
 
-[![DOI](https://zenodo.org/badge/47407916.svg)](https://zenodo.org/badge/latestdoi/47407916)
+[![DOI](https://zenodo.org/badge/109124460.svg)](https://zenodo.org/badge/latestdoi/109124460)
 
 ![SPEEDY](speedy.png)
 
