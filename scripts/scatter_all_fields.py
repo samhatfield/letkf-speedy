@@ -79,7 +79,7 @@ chdir(f'../experiments/{argv[1]}')
 colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 # Define levels and variables
-levels = [0.025, 0.34, 0.51, 0.835, 0.95]
+levels = [0.095, 0.34, 0.51, 0.835, 0.95]
 fields = [
         ('Surface Pressure [Pa]', 'Surface pressure', '*', 100.0),
         ('U-wind [m/s]', 'Zonal wind', '^', 1.0),
