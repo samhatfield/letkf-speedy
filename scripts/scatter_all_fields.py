@@ -11,30 +11,28 @@ sns.set_style('whitegrid', {'font.sans-serif': "Helvetica"})
 sns.set_palette(sns.color_palette('Set1'))
 
 def extract_error(field, dirname):
-    analys = load_cube(f'{dirname}/mean.nc', field)
+    analys = load_cube(f'{dirname}/anal_mean.nc', field)
     nature = load_cube('nature.nc', field)
 
     # Get minimum duration of data
-    time = min(analys.coord('time').points[-1], nature.coord('time').points[-1])
+    time = min(analys.coord('time').cell(-1), nature.coord('time').cell(-1))
     analys = analys.extract(Constraint(time=lambda t: t < time))
     nature = nature.extract(Constraint(time=lambda t: t < time))
 
     # Compute time mean after March 1st 00:00
-    with FUTURE.context(cell_datetime_objects=True):
-        analys = analys.extract(Constraint(time=lambda t: t > PartialDateTime(month=3,day=1)))
-        nature = nature.extract(Constraint(time=lambda t: t > PartialDateTime(month=3,day=1)))
+    analys = analys.extract(Constraint(time=lambda t: t > PartialDateTime(month=3,day=1)))
+    nature = nature.extract(Constraint(time=lambda t: t > PartialDateTime(month=3,day=1)))
 
     return analys, nature, time
 
 def extract_spread(field, dirname, time):
-    analys = load_cube(f'{dirname}/sprd.nc', field)
+    analys = load_cube(f'{dirname}/anal_sprd.nc', field)
 
     # Get minimum duration of data
     analys = analys.extract(Constraint(time=lambda t: t < time))
 
     # Compute time mean after March 1st 00:00
-    with FUTURE.context(cell_datetime_objects=True):
-        analys = analys.extract(Constraint(time=lambda t: t > PartialDateTime(month=3,day=1)))
+    analys = analys.extract(Constraint(time=lambda t: t > PartialDateTime(month=3,day=1)))
 
     return analys
 
@@ -52,7 +50,7 @@ def plot_fields(dirname, color):
         analys = extract_spread(fields[0][0], dirname, time)
         spread = analys.collapsed(['latitude', 'longitude', 'time'], MEAN)
         plt.scatter(error.data/fields[0][3], spread.data/fields[0][3], marker=fields[0][2], color=color, s=60*1.5**(len(levels)-1), alpha=0.5)
-    
+
         # Plot other fields
         for field in fields[1:]:
             for num, lev in enumerate(levels):
@@ -67,10 +65,8 @@ def plot_fields(dirname, color):
                 analys = extract_spread(field[0], dirname, time)
                 analys = analys.extract(Constraint(atmosphere_sigma_coordinate=lev))
                 spread = analys.collapsed(['latitude', 'longitude', 'time'], MEAN)
-                
-                plt.scatter(error.data/field[3], spread.data/field[3], marker=field[2], color=color, s=60*1.5**num, alpha=0.5)
 
-FUTURE.netcdf_promote = True
+                plt.scatter(error.data/field[3], spread.data/field[3], marker=field[2], color=color, s=60*1.5**num, alpha=0.5)
 
 # Change to relevant experiment directory
 chdir(f'../experiments/{argv[1]}')

@@ -5,26 +5,31 @@ from iris.cube import Cube, CubeList
 from glob import glob
 from os import chdir
 from sys import argv
+from cf_units import Unit, CALENDAR_STANDARD
 
 FUTURE.netcdf_no_unlimited = True
 
 ####################################################################################################
 
 def create_cube(name, short_name, surface = False):
+    time_unit = Unit('hours since 1982-01-01 00:00:00', calendar=CALENDAR_STANDARD)
     time = DimCoord([6.0*v for v in range(ntime)], standard_name='time', var_name='time',\
-        units='hours since 1982-01-01 00:00:00')
-    latitude = DimCoord(lats, standard_name='latitude', var_name='lat', units='degrees')
-    longitude = DimCoord(lons, standard_name='longitude', var_name='lon', units='degrees')
-    level = DimCoord(sigmas, standard_name='atmosphere_sigma_coordinate', var_name='lev')
+        units=time_unit)
+    level = DimCoord(sigmas, standard_name='atmosphere_sigma_coordinate', var_name='lev',\
+        units='')
+    latitude = DimCoord(lats_py, standard_name='latitude', long_name='latitude', var_name='lat',\
+        units='degrees')
+    longitude = DimCoord(lons, standard_name='longitude', long_name='longitude', var_name='lon',\
+        units='degrees')
 
-    coord_tuple = (ntime,nlat,nlon) if surface else (ntime,nlat,nlon,nlev)
+    coord_tuple = (ntime,nlat,nlon) if surface else (ntime,nlev,nlat,nlon)
     dummy = np.empty(coord_tuple)
     dummy[:] = np.nan
     if surface:
         return Cube(dummy, dim_coords_and_dims=[(time,0), (latitude, 1),(longitude, 2)],\
             long_name=name, var_name=short_name)
     else:
-        return Cube(dummy, dim_coords_and_dims=[(time,0), (latitude, 1),(longitude, 2),(level,3)],\
+        return Cube(dummy, dim_coords_and_dims=[(time,0), (level,1), (latitude, 2),(longitude, 3)],\
             long_name=name, var_name=short_name)
 
 ####################################################################################################
@@ -48,6 +53,7 @@ fields = [
 with open('../../common/t30.ctl') as f:
     content = f.readlines()[5]
     lats = [np.float32(lat) for lat in content.split()[3:]]
+    lats_py = [float(lat) for lat in content.split()[3:]]
 
 # Define longitudes
 lons = np.arange(0, 360, 3.75)
@@ -91,7 +97,7 @@ for t, file in enumerate(files):
             lon_i = np.where(lons == ob[1])[0][0]
             sigma = np.around(100.0*ob[3]/nature_ps.data[t, lat_i, lon_i], decimals=3)
             lev_i = np.where(sigmas == sigma)[0][0]
-            cubes[i].data[t, lat_i, lon_i, lev_i] = ob[4]
+            cubes[i].data[t, lev_i, lat_i, lon_i] = ob[4]
 
-save(CubeList(cubes), 'obs.nc', unlimited_dimensions=['time'])
+save(CubeList(cubes), 'obs.nc', unlimited_dimensions=['time'], fill_value=np.nan)
 print('Finished')
