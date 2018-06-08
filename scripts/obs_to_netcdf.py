@@ -86,7 +86,8 @@ for t, file in enumerate(files):
     for ob in ps_obs:
         lat_i = np.where(lats == ob[2])[0][0]
         lon_i = np.where(lons == ob[1])[0][0]
-        cubes[0].data[t, lat_i, lon_i] = ob[4]
+        # Convert pressure from hPa to Pa
+        cubes[0].data[t, lat_i, lon_i] = 100.0*ob[4]
 
     # Now process the other fields
     for i, field in enumerate(fields[1:],1):
